@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 enum EventType {
   add,
   remove,
@@ -15,13 +13,13 @@ class DeviceEvent {
   int get deviceType => _deviceType;
 
   @override
-  bool operator ==(Object o) =>
-      o is DeviceEvent &&
-      o.eventType == eventType &&
-      o.deviceType == deviceType;
+  bool operator ==(Object other) =>
+      other is DeviceEvent &&
+      other.eventType == eventType &&
+      other.deviceType == deviceType;
 
   @override
   int get hashCode {
-    return hashValues(eventType.hashCode, deviceType.hashCode);
+    return Object.hash(eventType.hashCode, deviceType.hashCode);
   }
 }

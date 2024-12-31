@@ -7,14 +7,18 @@ void main() {
 
   TestWidgetsFlutterBinding.ensureInitialized();
 
+  final defaultBinaryMessenger =
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+
   setUp(() {
-    channel.setMockMethodCallHandler((MethodCall methodCall) async {
+    defaultBinaryMessenger.setMockMethodCallHandler(channel,
+        (MethodCall methodCall) async {
       return 0;
     });
   });
 
   tearDown(() {
-    channel.setMockMethodCallHandler(null);
+    defaultBinaryMessenger.setMockMethodCallHandler(channel, null);
   });
 
   test('getDevicesCount', () async {
