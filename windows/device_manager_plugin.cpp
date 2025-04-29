@@ -63,6 +63,25 @@ DeviceManagerPlugin::DeviceManagerPlugin(flutter::PluginRegistrarWindows *regist
       [this](HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) {
         return HandleWindowProc(hwnd, message, wparam, lparam);
       });
+
+    //Register for WM_DEVICECHANGE
+    if(!m_registered) {
+        HWND hwnd = ::GetActiveWindow();
+        if (hwnd) {
+            m_registered = true;
+
+            DEV_BROADCAST_DEVICEINTERFACE notificationFilter;
+            ZeroMemory(&notificationFilter, sizeof(notificationFilter));
+            notificationFilter.dbcc_size = sizeof(DEV_BROADCAST_DEVICEINTERFACE);
+            notificationFilter.dbcc_devicetype = DBT_DEVTYP_DEVICEINTERFACE;
+
+            RegisterDeviceNotification(
+                    hwnd,
+                    &notificationFilter,
+                    DEVICE_NOTIFY_ALL_INTERFACE_CLASSES
+            );
+        }
+    }
 }
 
 DeviceManagerPlugin::~DeviceManagerPlugin() {
@@ -89,25 +108,6 @@ std::optional<LRESULT> DeviceManagerPlugin::HandleWindowProc(HWND hwnd,
                                                           LPARAM lparam) {
   std::optional<LRESULT> result;
   switch (message) {
-    case WM_ACTIVATE:
-      {
-        if(!m_registered)
-        {
-          m_registered = true;
-
-          DEV_BROADCAST_DEVICEINTERFACE notificationFilter;
-          ZeroMemory(&notificationFilter, sizeof(notificationFilter));
-          notificationFilter.dbcc_size = sizeof(DEV_BROADCAST_DEVICEINTERFACE);
-          notificationFilter.dbcc_devicetype = DBT_DEVTYP_DEVICEINTERFACE;
-
-          RegisterDeviceNotification(
-              hwnd,
-              &notificationFilter,
-              DEVICE_NOTIFY_ALL_INTERFACE_CLASSES
-          );
-        }
-      }
-      break;
     case WM_DEVICECHANGE:
       {
         if(wparam == DBT_DEVICEARRIVAL)
