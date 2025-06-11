@@ -1,6 +1,6 @@
 name: device_manager
 description: Manager for hardware devices(USB, Serial. etc...) for Flutter Windows Desktop applications.
-version: 0.0.4
+version: 0.0.5
 repository: https://github.com/bojidartonchev/device_manager
 
 environment:
@@ -21,3 +21,6 @@ flutter:
     platforms:
       windows:
         pluginClass: DeviceManagerPlugin
+      android:
+        pluginClass: DeviceManagerPlugin
+        package: com.example.device_manager

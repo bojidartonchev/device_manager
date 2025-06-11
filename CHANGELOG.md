@@ -1,3 +1,7 @@
+## 0.0.5
+
+* Initial Android support
+
 ## 0.0.4
 
 * Properly initialize the plugin, since WM_ACTIVATE may not be called on time

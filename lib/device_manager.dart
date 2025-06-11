@@ -14,6 +14,7 @@ class DeviceManager with ChangeNotifier {
   static final DeviceManager _singleton = DeviceManager._internal();
 
   final MethodChannel _channel = const MethodChannel('device_manager');
+  final EventChannel _eventChannel = const EventChannel('device_manager/events');
 
   factory DeviceManager() {
     return _singleton;
@@ -22,6 +23,22 @@ class DeviceManager with ChangeNotifier {
   DeviceEvent? _lastEvent;
 
   DeviceManager._internal() {
+    _eventChannel.receiveBroadcastStream().listen((msg) {
+      if (msg['event'] == "device_added") {
+        var ev = DeviceEvent(msg['productId'], EventType.add);
+        if (_lastEvent == null || _lastEvent != ev) {
+          _lastEvent = ev;
+          notifyListeners();
+        }
+      } else if (msg['event'] == "device_removed") {
+        var ev = DeviceEvent(msg['productId'], EventType.remove);
+        if (_lastEvent == null || _lastEvent != ev) {
+          _lastEvent = ev;
+          notifyListeners();
+        }
+      }
+    });
+
     _channel.setMethodCallHandler((call) {
       switch (call.method) {
         case "device_added":
