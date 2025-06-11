@@ -5,6 +5,7 @@ In other words, your Flutter Win32 App will be notified anytime there is a new h
 
 Supported platforms:
 - Windows
+- Android
 
 ## Usage
 
@@ -14,10 +15,18 @@ Now go to `lib\main.dart` and add this code in the `main` function right after `
 
 ```dart
 DeviceManager().addListener(() {
-  scaffoldKey.currentState!.showSnackBar(const SnackBar(content: Text('New device detected!')));
+    var event = DeviceManager().lastEvent;
+    if (event != null) {
+        if (event.eventType == EventType.add) {
+          scaffoldKey.currentState!.showSnackBar(
+          const SnackBar(content: Text('New device detected!')));
+        } else if (event.eventType == EventType.remove) {
+          scaffoldKey.currentState!.showSnackBar(const SnackBar(content: Text('Device removed!')));
+        }
+    }
 });
 ```
 
-This listener will be called anytime a device had been connected.
+This listener will be called anytime a device had been connected or disconnected.
 
 You can find examples in the `example` folder.
