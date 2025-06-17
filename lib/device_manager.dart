@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:device_manager/device_event.dart';
 import 'package:flutter/cupertino.dart';
@@ -23,21 +24,23 @@ class DeviceManager with ChangeNotifier {
   DeviceEvent? _lastEvent;
 
   DeviceManager._internal() {
-    _eventChannel.receiveBroadcastStream().listen((msg) {
-      if (msg['event'] == "device_added") {
-        var ev = DeviceEvent(msg['productId'], EventType.add);
-        if (_lastEvent == null || _lastEvent != ev) {
-          _lastEvent = ev;
-          notifyListeners();
+    if(Platform.isAndroid){
+      _eventChannel.receiveBroadcastStream().listen((msg) {
+        if (msg['event'] == "device_added") {
+          var ev = DeviceEvent(msg['productId'], EventType.add);
+          if (_lastEvent == null || _lastEvent != ev) {
+            _lastEvent = ev;
+            notifyListeners();
+          }
+        } else if (msg['event'] == "device_removed") {
+          var ev = DeviceEvent(msg['productId'], EventType.remove);
+          if (_lastEvent == null || _lastEvent != ev) {
+            _lastEvent = ev;
+            notifyListeners();
+          }
         }
-      } else if (msg['event'] == "device_removed") {
-        var ev = DeviceEvent(msg['productId'], EventType.remove);
-        if (_lastEvent == null || _lastEvent != ev) {
-          _lastEvent = ev;
-          notifyListeners();
-        }
-      }
-    });
+      });
+    }
 
     _channel.setMethodCallHandler((call) {
       switch (call.method) {

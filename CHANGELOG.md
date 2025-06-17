@@ -1,3 +1,7 @@
+## 0.0.7
+
+* Fixed MissingPluginException when running on Windows
+
 ## 0.0.6
 
 * Updated README
